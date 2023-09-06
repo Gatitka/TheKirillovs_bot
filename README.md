@@ -8,7 +8,7 @@ Admin section enables to prepare the database, add/delete users, manage admin ri
 
 ## Technologies used in project
 Python, SQLight,
-(currently developing: Nginx, Docker, GitHub Actions)
+(currently developing: Docker, GitHub Actions)
 
 ## Launching
 Clone repo
@@ -17,13 +17,15 @@ in project folder create new files accountant.db, config.py.
 In the created database file must create following tables:
 - users: list of users allowed to use Bot
 - records: main records table with expenses list
-Tables can be created by following command or by Admin in Bot.
+Tables can be created in Tm itself by /create_tables command.
 
 ##### config.py
 add bot token, received from BotFather like below
 ```
-BOT_TOKEN="token_received_from_BotFather"
+BOT_TOKEN="<token_received_from_BotFather>"
+ADMIN_ID="<User_ID_in_TM>"
 ```
+
 
 ## Created by
 Natalia Kirilova - author
