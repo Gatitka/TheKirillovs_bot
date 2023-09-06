@@ -131,3 +131,4 @@ dmypy.json
 .vscode
 accountant.db
 config.py
+notes.txt

@@ -7,7 +7,6 @@ from aiogram.dispatcher import FSMContext
 from dispatcher import dp
 import re
 from bot import BotDB
-from exceptions import RequestExceptionError
 
 MONTHLY_EXPENCES = 600.00
 
