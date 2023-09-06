@@ -8,7 +8,7 @@ from dispatcher import dp
 import re
 from bot import BotDB
 
-MONTHLY_EXPENCES = 600.00
+MONTHLY_EXPENCES = 200.00
 
 
 # START keyboard
