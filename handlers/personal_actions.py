@@ -7,8 +7,10 @@ from aiogram.dispatcher import FSMContext
 from dispatcher import dp
 import re
 from bot import BotDB
+import math
 
-MONTHLY_EXPENCES = 200.00
+
+MONTHLY_EXPENCES = 300
 
 
 # START keyboard
@@ -32,15 +34,16 @@ keyboard_exp = InlineKeyboardMarkup(resize_keyboard=True,
 
 button3 = InlineKeyboardButton(text='🍽food', callback_data='food')
 button4 = InlineKeyboardButton(text='🚙auto', callback_data='auto')
-button5 = InlineKeyboardButton(text='🏕travel', callback_data='travel')
+button5 = InlineKeyboardButton(text='🏕relax', callback_data='travel')
 button6 = InlineKeyboardButton(text='🤹‍♂️Stepa', callback_data='Stepa')
-button7 = InlineKeyboardButton(text='🎓know-how', callback_data='know-how')
+button7 = InlineKeyboardButton(text='🎓education', callback_data='know-how')
 button8 = InlineKeyboardButton(text='🏠flat', callback_data='flat')
 button9 = InlineKeyboardButton(text='👘style', callback_data='style')
+button16 = InlineKeyboardButton(text='👩🏻‍🔬health', callback_data='health')
 button10 = InlineKeyboardButton(text='🔙menu', callback_data='menu')
 
 keyboard_exp.row(button3, button4, button5, button6)
-keyboard_exp.row(button7, button8, button9)
+keyboard_exp.row(button7, button8, button9, button16)
 # keyboard_exp.add(button10)    # backwards not working properly
 
 # ADMIN-PANEL keyboard
@@ -60,7 +63,8 @@ keyboard_admin.row(button14, button15)
 keyboard_admin.add(button11)
 # keyboard_admin.add(button10)    # backwards not working properly
 
-CATEGORIES = ['food', 'auto', 'travel', 'Stepa', 'know-how', 'flat', 'style']
+CATEGORIES = ['food', 'auto', 'relax', 'Stepa',
+              'education', 'flat', 'style', 'health']
 SETTINGS = ['create_tables',
             'add_user', 'delete_user',
             'add_admin', 'delete_admin']
@@ -149,7 +153,7 @@ async def load_expense(message: types.Message, state: FSMContext):
     value, comment = extract_value(message.text)
     if value:
         BotDB.add_record(message.from_user.id, category, value, comment)
-        left = MONTHLY_EXPENCES - BotDB.get_records()
+        left = round(MONTHLY_EXPENCES - BotDB.get_records(), 2)
         await message.reply(
             f'👌Запись о расходе успешно занесена! Осталось {left}.',
             reply_markup=keyboard_menu
@@ -233,7 +237,7 @@ async def report(message: types.Message):
     elif not user_exists:
         await message.answer("Вы не в списке участников.🤷‍♀️")
     else:
-        left = MONTHLY_EXPENCES - BotDB.get_records()
+        left = round(MONTHLY_EXPENCES - BotDB.get_records(), 2)
         await message.answer(f'Осталось {left}!', reply_markup=keyboard_menu)
 
 

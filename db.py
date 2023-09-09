@@ -1,5 +1,6 @@
 import sqlite3
 import config
+import math
 
 
 class BotDB:
@@ -88,6 +89,7 @@ class BotDB:
 
     def add_record(self, user_id, category, value, comment):
         """Создаем запись о расходе"""
+        value = round(value, 2)
         self.cursor.execute(
             "INSERT INTO `records` "
             + "(`user_id`, `value`, `comment`, `category`) "
@@ -130,7 +132,7 @@ class BotDB:
         value = result.fetchall()[0][0]
         if value is None:
             value = 0
-        return value
+        return round(value, 2)
 
     def close(self):
         """Закрытие соединения с БД"""
