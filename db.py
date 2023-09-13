@@ -1,6 +1,5 @@
 import sqlite3
 import config
-import math
 
 
 class BotDB:
@@ -110,29 +109,79 @@ class BotDB:
             + "WHERE `date` BETWEEN datetime('now', 'start of month') "
             + "AND datetime('now', 'localtime')"
         )
-
-        # if (within == 'day'):
-        #     # за последний день
-        #     result = self.cursor.execute(
-        #         "SELECT * FROM `records`
-        #          WHERE `user_id` = ? AND `date`
-        #              BETWEEN datetime('now', 'start of day')
-        #              AND datetime('now', 'localtime')
-        #          ORDER BY `date`"
-        #     )
-        # if (within == 'month'):
-        #     # за последний месяц
-        #     result = self.cursor.execute(
-        #         "SELECT * FROM 'records'
-        #          WHERE 'user_id' = ? AND 'date'
-        #              BETWEEN datetime('now', 'start of month')
-        #              AND datetime('now', 'localtime')
-        #     ORDER BY 'date'"
-        #     )
         value = result.fetchall()[0][0]
         if value is None:
             value = 0
         return round(value, 2)
+
+    def get_report(self, command, MONTHLY_EXPENSES):
+        if command == '/results_total_month':
+            # за последний день
+            result = self.cursor.execute(
+                "SELECT category, SUM(`value`) AS SUM_VALUE "
+                + "FROM `records` "
+                + "WHERE `date` "
+                + "BETWEEN datetime('now', 'start of month') "
+                + "AND datetime('now', 'localtime') "
+                + "GROUP BY category "
+                + "ORDER BY SUM_VALUE DESC"
+            )
+            result = result.fetchall()
+            total_value = 0
+            for i in result:
+                total_value += i[1]
+            total_value = round(total_value, 2)
+            message = 'Саммери затрат за последний месяц:\n'
+            for i in result:
+                perc = int(i[1] / total_value * 100)
+                message += f' - {i[0]} {i[1]}€ {perc}%\n'
+            fact_vs_budget = int(total_value / MONTHLY_EXPENSES * 100)
+            if fact_vs_budget > 100:
+                message += (f'\nИтого потрачено {total_value}€\n'
+                            + f'Перерасход бюджета {fact_vs_budget - 100}%\n\n'
+                            + 'НУ ЧТО Ж... иди ебашь')
+            else:
+                message += (f'\nИтого потрачено {total_value}€\n'
+                            + f'Экономия бюджета {100 - fact_vs_budget}%\n\n'
+                            + 'МОЛОДЦЫ!!!'
+                            )
+
+        elif command == '/details_day':
+            # за последний день
+            result = self.cursor.execute(
+                "SELECT strftime('%d.%m %H:%M', date) AS formatted_date, "
+                + "category, value, comment FROM 'records' "
+                + "WHERE `date` "
+                + "BETWEEN datetime('now', 'start of day') "
+                + "AND datetime('now', 'localtime') "
+                + "ORDER BY `date`"
+            )
+            result = result.fetchall()
+            if result:
+                message = 'Записи за сегодня:\n'
+                for i in result:
+                    message += f'-> {i[0]} {i[1]} {i[2]}€ {i[3]}\n'
+            else:
+                message = 'Записей сегодня нет.'
+
+        elif command == '/details_month':
+            # за последний месяц
+            result = self.cursor.execute(
+                "SELECT strftime('%d.%m %H:%M', date) AS formatted_date, "
+                + "category, value, comment FROM 'records' "
+                + "WHERE `date` "
+                + "BETWEEN datetime('now', 'start of month') "
+                + "AND datetime('now', 'localtime') "
+                + "ORDER BY 'date'"
+            )
+            result = result.fetchall()
+            if result:
+                message = 'Записи этого месяца:\n'
+                for i in result:
+                    message += f'-> {i[0]} {i[1]} {i[2]}€ {i[3]}\n'
+            else:
+                message = 'Записей в этом месяце нет.'
+        return message
 
     def close(self):
         """Закрытие соединения с БД"""
