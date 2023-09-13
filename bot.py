@@ -2,9 +2,10 @@ import handlers
 import aiogram
 from db import BotDB
 from dispatcher import dp
+import config
 
-BotDB = BotDB('accountant.db')
-# BotDB = BotDB('/home/Admin/TheKirillovs_bot/accountant.db')
+BotDB = BotDB(config.DB_FILE)
+BotDB = BotDB()
 # connection to DB on distant server
 
 if __name__ == "__main__":
