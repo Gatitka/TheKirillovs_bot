@@ -42,7 +42,7 @@ def get_expenses_kb() -> InlineKeyboardMarkup:
                                         one_time_keyboard=True)
     button3 = InlineKeyboardButton(text='🍽food', callback_data='food')
     button4 = InlineKeyboardButton(text='🚙auto', callback_data='auto')
-    button5 = InlineKeyboardButton(text='🏕relax', callback_data='travel')
+    button5 = InlineKeyboardButton(text='🏕relax', callback_data='relax')
     button6 = InlineKeyboardButton(text='🤹‍♂️Stepa', callback_data='Stepa')
     button7 = InlineKeyboardButton(text='🎓education', callback_data='know-how')
     button8 = InlineKeyboardButton(text='🏠flat', callback_data='flat')
