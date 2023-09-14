@@ -7,6 +7,7 @@ from aiogram.dispatcher import FSMContext
 from dispatcher import dp
 import re
 from bot import BotDB
+import asyncio
 
 
 MONTHLY_EXPENCES = 300
@@ -47,7 +48,7 @@ def get_expenses_kb() -> InlineKeyboardMarkup:
     button8 = InlineKeyboardButton(text='🏠flat', callback_data='flat')
     button9 = InlineKeyboardButton(text='👘style', callback_data='style')
     button16 = InlineKeyboardButton(text='👩🏻‍🔬health', callback_data='health')
-    button10 = InlineKeyboardButton(text='🔙menu', callback_data='menu')
+    # button10 = InlineKeyboardButton(text='🔙cancel', callback_data='cancel')
 
     keyboard_exp.row(button3, button4, button5, button6)
     keyboard_exp.row(button7, button8, button9, button16)
@@ -106,7 +107,6 @@ class ExpencesStatesGroup(StatesGroup):
 
 
 class AdminStatesGroup(StatesGroup):
-    admin_choose = State()
     add_user = State()
     del_user = State()
     add_admin = State()
@@ -183,6 +183,12 @@ async def load_category(call: types.CallbackQuery, state: FSMContext):
     await state.update_data(category=call.data)
     await ExpencesStatesGroup.expense.set()
     # установили состояние затрат
+
+
+# @dp.callback_query_handler(text='cancel', state='*')
+# async def cancel(call: types.CallbackQuery, state: FSMContext):
+#     asyncio.run(state.finish())
+#     await call.message.delete()
 
 
 @dp.message_handler(state=ExpencesStatesGroup.expense)
