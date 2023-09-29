@@ -151,9 +151,8 @@ class BotDB:
             message = f'Записи за {period}:\n'
             for i in result:
                 message += f'-> {i[0]} {i[1]} {i[2]}€ {i[3]}\n'
-        else:
-            message = 'Записей за {period} нет.'
-        return message
+            return message
+        return f'Записей за {period} нет.'
 
     def get_today_report(self, monthly_expenses):
         # за последний день

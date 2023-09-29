@@ -1,7 +1,7 @@
+import config
+
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-
-import config
 
 # from filters import IsOwnerFilter, IsAdminFilter, MemberCanRestrictFilter
 # import logging
