@@ -45,7 +45,7 @@ jobs:
             key: ${{ secrets.SSH_KEY }}
             passphrase: ${{ secrets.PASSPHRASE }} # Если ваш ssh-ключ защищён фразой-паролем
             script: |
-              # переход в папку проекта
+              # переход в папку проекта X
               cd ../home/Admin/TheKirillovs_bot/
               # Выполняет pull репозитория с GitHub
               sudo git pull
