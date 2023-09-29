@@ -1,5 +1,4 @@
 import aiogram
-
 import config
 from db import BotDB
 from dispatcher import dp
