@@ -1,8 +1,8 @@
-import handlers
 import aiogram
+
+import config
 from db import BotDB
 from dispatcher import dp
-import config
 
 BotDB = BotDB(config.DB_FILE)
 # connection to DB on distant server
