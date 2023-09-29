@@ -146,6 +146,15 @@ class BotDB:
                         )
         return message
 
+    def create_message(self, result, period):
+        if result:
+            message = f'Записи за {period}:\n'
+            for i in result:
+                message += f'-> {i[0]} {i[1]} {i[2]}€ {i[3]}\n'
+        else:
+            message = 'Записей за {period} нет.'
+        return message
+
     def get_today_report(self, monthly_expenses):
         # за последний день
         result = self.cursor.execute(
@@ -157,13 +166,7 @@ class BotDB:
             + "ORDER BY `date`"
         )
         result = result.fetchall()
-        if result:
-            message = 'Записи за сегодня:\n'
-            for i in result:
-                message += f'-> {i[0]} {i[1]} {i[2]}€ {i[3]}\n'
-        else:
-            message = 'Записей сегодня нет.'
-        return message
+        return BotDB.create_message(result, 'сегодня')
 
     def get_detail_month_report(self, monthly_expenses):
         # за последний месяц
@@ -176,13 +179,7 @@ class BotDB:
             + "ORDER BY 'date'"
         )
         result = result.fetchall()
-        if result:
-            message = 'Записи этого месяца:\n'
-            for i in result:
-                message += f'-> {i[0]} {i[1]} {i[2]}€ {i[3]}\n'
-        else:
-            message = 'Записей в этом месяце нет.'
-        return message
+        return BotDB.create_message(result, 'месяц')
 
     def close(self):
         """Закрытие соединения с БД"""

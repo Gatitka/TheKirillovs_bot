@@ -1,13 +1,13 @@
-import logging
-
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-# from filters import IsOwnerFilter, IsAdminFilter, MemberCanRestrictFilter
 import config
 
+# from filters import IsOwnerFilter, IsAdminFilter, MemberCanRestrictFilter
+# import logging
+
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 
 # prerequisites
 if not config.BOT_TOKEN:
