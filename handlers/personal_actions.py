@@ -48,11 +48,11 @@ def get_expenses_kb() -> InlineKeyboardMarkup:
     button8 = InlineKeyboardButton(text='🏠flat', callback_data='flat')
     button9 = InlineKeyboardButton(text='👘style', callback_data='style')
     button16 = InlineKeyboardButton(text='👩🏻‍🔬health', callback_data='health')
-    # button10 = InlineKeyboardButton(text='🔙cancel', callback_data='cancel')
+    button10 = InlineKeyboardButton(text='🔙cancel', callback_data='cancel')
 
     keyboard_exp.row(button3, button4, button5, button6)
     keyboard_exp.row(button7, button8, button9, button16)
-    # keyboard_exp.add(button10)    # backwards not working properly
+    keyboard_exp.add(button10)    # backwards not working properly
     return keyboard_exp
 
 
@@ -70,10 +70,11 @@ def get_admin_panel_kb() -> InlineKeyboardMarkup:
                                     callback_data='add_admin')
     button15 = InlineKeyboardButton(text='del_admin',
                                     callback_data='delete_admin')
-
+    button10 = InlineKeyboardButton(text='🔙cancel', callback_data='cancel')
     keyboard_admin.row(button12, button13)
     keyboard_admin.row(button14, button15)
     keyboard_admin.add(button11)
+    keyboard_admin.add(button10)
     return keyboard_admin
 
 
@@ -111,14 +112,6 @@ class AdminStatesGroup(StatesGroup):
     del_user = State()
     add_admin = State()
     del_admin = State()
-
-
-dp.message_handler(commands=['cancel'], state='*')
-async def cmd_cancel(message: types.Message, state: FSMContext):
-    if state is None:
-        return
-    await state.finish()
-    await message.reply('Действие отменено', reply_markup=get_menu_kb())
 
 
 @dp.message_handler(commands='start')
@@ -178,17 +171,21 @@ async def add_expence(message: types.Message):
         await message.delete()
 
 
+@dp.callback_query_handler(text='cancel', state='*')
+async def cancel(call: types.CallbackQuery, state: FSMContext):
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    await state.finish()
+    await call.answer("Запись отменена.")
+    await call.message.delete()
+
+
 @dp.callback_query_handler(text=CATEGORIES, state=ExpencesStatesGroup.category)
 async def load_category(call: types.CallbackQuery, state: FSMContext):
     await state.update_data(category=call.data)
     await ExpencesStatesGroup.expense.set()
     # установили состояние затрат
-
-
-# @dp.callback_query_handler(text='cancel', state='*')
-# async def cancel(call: types.CallbackQuery, state: FSMContext):
-#     asyncio.run(state.finish())
-#     await call.message.delete()
 
 
 @dp.message_handler(state=ExpencesStatesGroup.expense)
@@ -224,8 +221,7 @@ def extract_value(expense: str):
 
 @dp.callback_query_handler(text=SETTINGS)
 async def settings(call: types.CallbackQuery):
-    await call.answer('Внесите ID пользователя.',
-                      reply_markup=get_cancel_kb())
+    await call.answer('Внесите ID пользователя.')
     if call.data == 'create_tables':
         BotDB.create_db_tables()
         await call.answer(
