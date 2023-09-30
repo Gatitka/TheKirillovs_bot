@@ -43,11 +43,12 @@ jobs:
             host: ${{ secrets.HOST }}
             username: ${{ secrets.USER }}
             key: ${{ secrets.SSH_KEY }}
-            # passphrase: ${{ secrets.PASSPHRASE }}
+            passphrase: ${{ secrets.PASSPHRASE }}
             script: |
               # переход в папку проекта
               cd ../home/Admin/TheKirillovs_bot/
               # Выполняет pull репозитория с GitHub
               sudo git pull
               # перезапуск юнита myBot
+              systemctl stop myBot
               systemctl start myBot
