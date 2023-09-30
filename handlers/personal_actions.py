@@ -1,13 +1,14 @@
-import re
-
 from aiogram import types
+from aiogram.types import (ReplyKeyboardMarkup,
+                           InlineKeyboardMarkup,
+                           InlineKeyboardButton)
+from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
-                           ReplyKeyboardMarkup)
-
-from bot import BotDB
 from dispatcher import dp
+import re
+from bot import BotDB
+import asyncio
+
 
 MONTHLY_EXPENCES = 300
 
@@ -119,7 +120,7 @@ async def start(message: types.Message):
         "Добро пожаловать!\nНажми /menu для входа в учет затрат.",
         reply_markup=get_start_kb()
     )
-    if BotDB.is_admin(message.from_user.id):
+    if BotDB.isAdmin(message.from_user.id):
         await message.answer(
             "Вы авторизовались как администратор и вам доступна команда\n"
             + "/admin_panel для создания базы данных, "
@@ -143,7 +144,7 @@ async def menu(message: types.Message):
 
 @dp.message_handler(commands='admin-panel')
 async def start_settings(message: types.Message):
-    if BotDB.is_admin(message.from_user.id):
+    if BotDB.isAdmin(message.from_user.id):
         await message.answer(
             "Выбери команду для следующего действия:",
             reply_markup=get_admin_panel_kb()
@@ -294,11 +295,6 @@ async def report_detailed(message: types.Message):
     elif not user_exists:
         await message.answer("Вы не в списке участников.🤷‍♀️")
     else:
-        if message.text == '/results_total_month':
-            result = BotDB.get_monthly_report(MONTHLY_EXPENCES)
-        elif message.text == '/details_day':
-            result = BotDB.get_today_report(MONTHLY_EXPENCES)
-        elif message.text == '/details_month':
-            result = BotDB.get_detail_month_report(MONTHLY_EXPENCES)
+        result = BotDB.get_report(message.text, MONTHLY_EXPENCES)
         await message.answer(result, reply_markup=get_menu_kb())
     await message.delete()

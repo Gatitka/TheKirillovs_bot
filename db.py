@@ -1,5 +1,4 @@
 import sqlite3
-
 import config
 
 
@@ -50,7 +49,7 @@ class BotDB:
                                 (user_id))
         return self.conn.commit()
 
-    def is_admin(self, user_id):
+    def isAdmin(self, user_id):
         """Проверка активного пользователя, админи ли он по его user_id"""
         try:
             db_result = self.cursor.execute(
@@ -115,70 +114,74 @@ class BotDB:
             value = 0
         return round(value, 2)
 
-    def get_monthly_report(self, monthly_expenses):
-        result = self.cursor.execute(
-            "SELECT category, SUM(`value`) AS SUM_VALUE "
-            + "FROM `records` "
-            + "WHERE `date` "
-            + "BETWEEN datetime('now', 'start of month') "
-            + "AND datetime('now', 'localtime') "
-            + "GROUP BY category "
-            + "ORDER BY SUM_VALUE DESC"
-        )
-        result = result.fetchall()
-        total_value = 0
-        for i in result:
-            total_value += i[1]
-        total_value = round(total_value, 2)
-        message = 'Саммери затрат за последний месяц:\n'
-        for i in result:
-            perc = int(i[1] / total_value * 100)
-            message += f' - {i[0]} {i[1]}€ {perc}%\n'
-        fact_vs_budget = int(total_value / monthly_expenses * 100)
-        if fact_vs_budget > 100:
-            message += (f'\nИтого потрачено {total_value}€\n'
-                        + f'Перерасход бюджета {fact_vs_budget - 100}%\n\n'
-                        + 'НУ ЧТО Ж... иди ебашь')
-        else:
-            message += (f'\nИтого потрачено {total_value}€\n'
-                        + f'Экономия бюджета {100 - fact_vs_budget}%\n\n'
-                        + 'МОЛОДЦЫ!!!'
-                        )
-        return message
-
-    def create_message(self, result, period):
-        if result:
-            message = f'Записи за {period}:\n'
+    def get_report(self, command, MONTHLY_EXPENSES):
+        if command == '/results_total_month':
+            # за последний день
+            result = self.cursor.execute(
+                "SELECT category, SUM(`value`) AS SUM_VALUE "
+                + "FROM `records` "
+                + "WHERE `date` "
+                + "BETWEEN datetime('now', 'start of month') "
+                + "AND datetime('now', 'localtime') "
+                + "GROUP BY category "
+                + "ORDER BY SUM_VALUE DESC"
+            )
+            result = result.fetchall()
+            total_value = 0
             for i in result:
-                message += f'-> {i[0]} {i[1]} {i[2]}€ {i[3]}\n'
-            return message
-        return f'Записей за {period} нет.'
+                total_value += i[1]
+            total_value = round(total_value, 2)
+            message = 'Саммери затрат за последний месяц:\n'
+            for i in result:
+                perc = int(i[1] / total_value * 100)
+                message += f' - {i[0]} {i[1]}€ {perc}%\n'
+            fact_vs_budget = int(total_value / MONTHLY_EXPENSES * 100)
+            if fact_vs_budget > 100:
+                message += (f'\nИтого потрачено {total_value}€\n'
+                            + f'Перерасход бюджета {fact_vs_budget - 100}%\n\n'
+                            + 'НУ ЧТО Ж... иди ебашь')
+            else:
+                message += (f'\nИтого потрачено {total_value}€\n'
+                            + f'Экономия бюджета {100 - fact_vs_budget}%\n\n'
+                            + 'МОЛОДЦЫ!!!'
+                            )
 
-    def get_today_report(self, monthly_expenses):
-        # за последний день
-        result = self.cursor.execute(
-            "SELECT strftime('%d.%m %H:%M', date) AS formatted_date, "
-            + "category, value, comment FROM 'records' "
-            + "WHERE `date` "
-            + "BETWEEN datetime('now', 'start of day') "
-            + "AND datetime('now', 'localtime') "
-            + "ORDER BY `date`"
-        )
-        result = result.fetchall()
-        return BotDB.create_message(result, 'сегодня')
+        elif command == '/details_day':
+            # за последний день
+            result = self.cursor.execute(
+                "SELECT strftime('%d.%m %H:%M', date) AS formatted_date, "
+                + "category, value, comment FROM 'records' "
+                + "WHERE `date` "
+                + "BETWEEN datetime('now', 'start of day') "
+                + "AND datetime('now', 'localtime') "
+                + "ORDER BY `date`"
+            )
+            result = result.fetchall()
+            if result:
+                message = 'Записи за сегодня:\n'
+                for i in result:
+                    message += f'-> {i[0]} {i[1]} {i[2]}€ {i[3]}\n'
+            else:
+                message = 'Записей сегодня нет.'
 
-    def get_detail_month_report(self, monthly_expenses):
-        # за последний месяц
-        result = self.cursor.execute(
-            "SELECT strftime('%d.%m %H:%M', date) AS formatted_date, "
-            + "category, value, comment FROM 'records' "
-            + "WHERE `date` "
-            + "BETWEEN datetime('now', 'start of month') "
-            + "AND datetime('now', 'localtime') "
-            + "ORDER BY 'date'"
-        )
-        result = result.fetchall()
-        return BotDB.create_message(result, 'месяц')
+        elif command == '/details_month':
+            # за последний месяц
+            result = self.cursor.execute(
+                "SELECT strftime('%d.%m %H:%M', date) AS formatted_date, "
+                + "category, value, comment FROM 'records' "
+                + "WHERE `date` "
+                + "BETWEEN datetime('now', 'start of month') "
+                + "AND datetime('now', 'localtime') "
+                + "ORDER BY 'date'"
+            )
+            result = result.fetchall()
+            if result:
+                message = 'Записи этого месяца:\n'
+                for i in result:
+                    message += f'-> {i[0]} {i[1]} {i[2]}€ {i[3]}\n'
+            else:
+                message = 'Записей в этом месяце нет.'
+        return message
 
     def close(self):
         """Закрытие соединения с БД"""
