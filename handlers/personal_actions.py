@@ -1,16 +1,16 @@
-from aiogram import types
-from aiogram.types import (ReplyKeyboardMarkup,
-                           InlineKeyboardMarkup,
-                           InlineKeyboardButton)
-from aiogram.dispatcher.filters.state import StatesGroup, State
-from aiogram.dispatcher import FSMContext
-from dispatcher import dp
 import re
+
+from aiogram import types
+from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.types import (InlineKeyboardButton, InlineKeyboardMarkup,
+                           ReplyKeyboardMarkup)
+
 from bot import BotDB
-import asyncio
+from dispatcher import dp
 
-
-MONTHLY_EXPENCES = 300
+MONTHLY_EXPENCES = 600
+PERIOD_START = '2023-09-25'
 
 
 def get_start_kb() -> ReplyKeyboardMarkup:
@@ -52,7 +52,7 @@ def get_expenses_kb() -> InlineKeyboardMarkup:
 
     keyboard_exp.row(button3, button4, button5, button6)
     keyboard_exp.row(button7, button8, button9, button16)
-    keyboard_exp.add(button10)    # backwards not working properly
+    keyboard_exp.add(button10)
     return keyboard_exp
 
 
@@ -112,6 +112,7 @@ class AdminStatesGroup(StatesGroup):
     del_user = State()
     add_admin = State()
     del_admin = State()
+    choice = State()
 
 
 @dp.message_handler(commands='start')
@@ -120,7 +121,7 @@ async def start(message: types.Message):
         "Добро пожаловать!\nНажми /menu для входа в учет затрат.",
         reply_markup=get_start_kb()
     )
-    if BotDB.isAdmin(message.from_user.id):
+    if BotDB.is_admin(message.from_user.id):
         await message.answer(
             "Вы авторизовались как администратор и вам доступна команда\n"
             + "/admin_panel для создания базы данных, "
@@ -144,11 +145,12 @@ async def menu(message: types.Message):
 
 @dp.message_handler(commands='admin-panel')
 async def start_settings(message: types.Message):
-    if BotDB.isAdmin(message.from_user.id):
+    if BotDB.is_admin(message.from_user.id):
         await message.answer(
             "Выбери команду для следующего действия:",
             reply_markup=get_admin_panel_kb()
         )
+        await AdminStatesGroup.choice.set()
     await message.delete()
 
 
@@ -175,6 +177,7 @@ async def add_expence(message: types.Message):
 async def cancel(call: types.CallbackQuery, state: FSMContext):
     current_state = await state.get_state()
     if current_state is None:
+        await call.message.delete()
         return
     await state.finish()
     await call.answer("Запись отменена.")
@@ -219,7 +222,7 @@ def extract_value(expense: str):
     return value, comment
 
 
-@dp.callback_query_handler(text=SETTINGS)
+@dp.callback_query_handler(text=SETTINGS, state=AdminStatesGroup.choice)
 async def settings(call: types.CallbackQuery):
     await call.answer('Внесите ID пользователя.')
     if call.data == 'create_tables':
@@ -295,6 +298,11 @@ async def report_detailed(message: types.Message):
     elif not user_exists:
         await message.answer("Вы не в списке участников.🤷‍♀️")
     else:
-        result = BotDB.get_report(message.text, MONTHLY_EXPENCES)
+        if message.text == '/results_total_month':
+            result = BotDB.get_report_total_month(MONTHLY_EXPENCES)
+        elif message.text == '/details_day':
+            result = BotDB.get_report_details_day()
+        elif message.text == '/details_month':
+            result = BotDB.get_report_details_month()
         await message.answer(result, reply_markup=get_menu_kb())
     await message.delete()

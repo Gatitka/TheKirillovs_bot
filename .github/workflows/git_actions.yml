@@ -50,4 +50,4 @@ jobs:
               sudo git pull
               # перезапуск юнита myBot
               systemctl stop myBot
-              # systemctl start myBot
+              systemctl start myBot
