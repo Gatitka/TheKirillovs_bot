@@ -13,8 +13,9 @@ from dispatcher import dp
 
 MONTHLY_EXPENCES = 600
 PERIOD_START = [2023, 9, 25]
-PERIOD_START_DATE = datetime.datetime(*PERIOD_START)
+PERIOD_END = [PERIOD_START[0], PERIOD_START[1]+1, PERIOD_START[2]-1]
 TODAY_DATE = datetime.datetime.today()
+
 
 def get_start_kb() -> ReplyKeyboardMarkup:
     keyboard_start = ReplyKeyboardMarkup(resize_keyboard=True,
@@ -196,7 +197,7 @@ async def load_category(call: types.CallbackQuery, state: FSMContext):
 
 def prepare_report_message():
     left = round(MONTHLY_EXPENCES - BotDB.get_records(), 2)
-    days_left = (TODAY_DATE - PERIOD_START_DATE).days
+    days_left = (datetime.datetime(*PERIOD_END) - TODAY_DATE).days
     daily_av = round(left / days_left, 2)
     return (f'Осталось:\n{left} € на {days_left} дней\n'
             + f'{daily_av} € - лимит трат на день')
