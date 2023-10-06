@@ -36,7 +36,7 @@ def get_start_admin_kb() -> ReplyKeyboardMarkup:
 def get_menu_kb() -> ReplyKeyboardMarkup:
     keyboard_menu = ReplyKeyboardMarkup(resize_keyboard=True,
                                         one_time_keyboard=True)
-    keyboard_menu.add('/add_expence').add('/report').add('/start')
+    keyboard_menu.add('/add_expence').add('/report').add('/menu').add('/start')
     return keyboard_menu
 
 
