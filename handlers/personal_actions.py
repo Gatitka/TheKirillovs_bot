@@ -1,3 +1,5 @@
+
+import datetime
 import re
 
 from aiogram import types
@@ -10,8 +12,9 @@ from bot import BotDB
 from dispatcher import dp
 
 MONTHLY_EXPENCES = 600
-PERIOD_START = '2023-09-25'
-
+PERIOD_START = [2023, 9, 25]
+PERIOD_START_DATE = datetime.datetime(*PERIOD_START)
+TODAY_DATE = datetime.datetime.today()
 
 def get_start_kb() -> ReplyKeyboardMarkup:
     keyboard_start = ReplyKeyboardMarkup(resize_keyboard=True,
@@ -191,6 +194,14 @@ async def load_category(call: types.CallbackQuery, state: FSMContext):
     # установили состояние затрат
 
 
+def prepare_report_message():
+    left = round(MONTHLY_EXPENCES - BotDB.get_records(), 2)
+    days_left = (TODAY_DATE - PERIOD_START_DATE).days
+    daily_av = round(left / days_left, 2)
+    return (f'Осталось:\n{left} € на {days_left} дней\n'
+            + f'{daily_av} € - лимит трат на день')
+
+
 @dp.message_handler(state=ExpencesStatesGroup.expense)
 async def load_expense(message: types.Message, state: FSMContext):
     await state.update_data(expense=message.text)
@@ -199,9 +210,9 @@ async def load_expense(message: types.Message, state: FSMContext):
     value, comment = extract_value(message.text)
     if value:
         BotDB.add_record(message.from_user.id, category, value, comment)
-        left = round(MONTHLY_EXPENCES - BotDB.get_records(), 2)
+        report_message = prepare_report_message()
         await message.reply(
-            f'👌Запись о расходе успешно занесена! Осталось {left}.',
+            f'👌Запись о расходе успешно занесена!\n{report_message}',
             reply_markup=get_menu_kb()
         )
         await state.finish()
@@ -285,8 +296,11 @@ async def report(message: types.Message):
     elif not user_exists:
         await message.answer("Вы не в списке участников.🤷‍♀️")
     else:
-        left = round(MONTHLY_EXPENCES - BotDB.get_records(), 2)
-        await message.answer(f'Осталось {left}!', reply_markup=get_report_kb())
+        report_message = prepare_report_message()
+        await message.answer(
+            f'{report_message}',
+            reply_markup=get_report_kb()
+        )
 
 
 @dp.message_handler(commands=REPORT)
