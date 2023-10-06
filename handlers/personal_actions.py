@@ -197,7 +197,7 @@ async def load_category(call: types.CallbackQuery, state: FSMContext):
 
 def prepare_report_message():
     left = round(MONTHLY_EXPENCES - BotDB.get_records(), 2)
-    days_left = (datetime.datetime(*PERIOD_END) - TODAY_DATE).days
+    days_left = (datetime.datetime(*PERIOD_END) - TODAY_DATE).days + 1
     daily_av = round(left / days_left, 2)
     return (f'Осталось:\n{left} € на {days_left} дней\n'
             + f'{daily_av} € - лимит трат на день')
