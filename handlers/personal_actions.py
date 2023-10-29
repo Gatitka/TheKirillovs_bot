@@ -12,7 +12,7 @@ from bot import BotDB
 from dispatcher import dp
 
 MONTHLY_EXPENCES = 600
-PERIOD_START = [2023, 9, 25]
+PERIOD_START = [2023, 10, 25]
 PERIOD_END = [PERIOD_START[0], PERIOD_START[1]+1, PERIOD_START[2]-1]
 
 
