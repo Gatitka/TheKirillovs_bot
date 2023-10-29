@@ -113,7 +113,7 @@ class BotDB:
         result = self.cursor.execute(
             "SELECT SUM(`value`) "
             + "FROM `records` "
-            + "WHERE `date` >= '2023-09-25'"
+            + "WHERE `date` >= '2023-10-25'"
         )
         # result = self.cursor.execute(
         #     "SELECT SUM(`value`) "
@@ -131,7 +131,7 @@ class BotDB:
         result = self.cursor.execute(
             "SELECT category, SUM(`value`) AS SUM_VALUE "
             + "FROM `records` "
-            + "WHERE `date` >= '2023-09-25'"
+            + "WHERE `date` >= '2023-10-25'"
             # + "BETWEEN datetime('now', 'start of month') "
             # + "AND datetime('now', 'localtime') "
             + "GROUP BY category "
@@ -178,7 +178,7 @@ class BotDB:
         result = self.cursor.execute(
             "SELECT strftime('%d.%m %H:%M', date) AS formatted_date, "
             + "category, value, comment FROM 'records' "
-            + "WHERE `date` >= '2023-09-25'"
+            + "WHERE `date` >= '2023-10-25'"
             # + "BETWEEN datetime('now', 'start of month') "
             # + "AND datetime('now', 'localtime') "
             + "ORDER BY 'date'"
