@@ -1,9 +1,8 @@
-import keyboards as kb
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 
-from bot import BotDB
-from dispatcher import dp
+import handlers.keyboards as kb
+from dispatcher import BotDB
 
 
 # @dp.message_handler(commands='start')

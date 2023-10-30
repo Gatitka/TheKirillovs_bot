@@ -1,1 +1,1 @@
-from . import admin, expences, other, report
+from handlers import admin, expences, other, report

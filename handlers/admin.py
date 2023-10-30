@@ -1,10 +1,9 @@
-import keyboards as kb
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
-from bot import BotDB
-from dispatcher import dp
+import handlers.keyboards as kb
+from dispatcher import BotDB
 
 SETTINGS = ['create_tables',
             'add_user', 'delete_user',

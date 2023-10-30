@@ -1,15 +1,15 @@
 import datetime
 import re
 
-import keyboards as kb
 from aiogram import Dispatcher, types
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters.state import State, StatesGroup
 
-from bot import MONTHLY_EXPENCES, PERIOD_END, PERIOD_START, BotDB
-from dispatcher import dp
+import handlers.keyboards as kb
+from dispatcher import BotDB
 
 REPORT = ['results_total_month', 'details_day', 'details_month']
+MONTHLY_EXPENCES = 600
+PERIOD_START = [2023, 10, 25]
+PERIOD_END = [PERIOD_START[0], PERIOD_START[1]+1, PERIOD_START[2]-1]
 
 
 def prepare_report_message():

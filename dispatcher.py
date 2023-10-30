@@ -3,8 +3,11 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-# from filters import IsOwnerFilter, IsAdminFilter, MemberCanRestrictFilter
 import config
+from db import BotDB
+
+# from filters import IsOwnerFilter, IsAdminFilter, MemberCanRestrictFilter
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -16,6 +19,8 @@ if not config.BOT_TOKEN:
 # init
 storage = MemoryStorage()
 bot = Bot(token=config.BOT_TOKEN, parse_mode="HTML")
+BotDB = BotDB(config.DB_FILE)
+# connection to DB on distant server
 dp = Dispatcher(bot, storage=storage)
 
 # # activate filters
