@@ -47,4 +47,4 @@ async def cancel(call: types.CallbackQuery, state: FSMContext):
 def register_handlers_other(dp: Dispatcher):
     dp.register_message_handler(start, commands=['start'])
     dp.register_message_handler(menu, commands=['menu'])
-    dp.callback_query_handler(cancel, text='cancel', state='*')
+    dp.register_callback_query_handler(cancel, text='cancel', state='*')

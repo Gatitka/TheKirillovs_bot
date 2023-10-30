@@ -85,9 +85,9 @@ async def del_admin(message: types.Message, state: FSMContext):
 
 def register_handlers_admin(dp: Dispatcher):
     dp.register_message_handler(start_settings, commands=['admin-panel'])
-    dp.callback_query_handler(settings, text=SETTINGS,
-                              state=AdminStatesGroup.choice)
-    dp.message_handler(add_user, state=AdminStatesGroup.add_user)
-    dp.message_handler(del_user, state=AdminStatesGroup.del_user)
-    dp.message_handler(add_admin, state=AdminStatesGroup.add_admin)
-    dp.message_handler(del_admin, state=AdminStatesGroup.del_admin)
+    dp.register_callback_query_handler(settings, text=SETTINGS,
+                                       state=AdminStatesGroup.choice)
+    dp.register_message_handler(add_user, state=AdminStatesGroup.add_user)
+    dp.register_message_handler(del_user, state=AdminStatesGroup.del_user)
+    dp.register_message_handler(add_admin, state=AdminStatesGroup.add_admin)
+    dp.register_message_handler(del_admin, state=AdminStatesGroup.del_admin)

@@ -64,7 +64,8 @@ async def load_expense(message: types.Message, state: FSMContext):
 
 
 def register_handlers_expences(dp: Dispatcher):
-    dp.message_handler(add_expence, commands='add_expence')
-    dp.callback_query_handler(load_category, text=CATEGORIES,
-                              state=ExpencesStatesGroup.category)
-    dp.message_handler(load_expense, state=ExpencesStatesGroup.expense)
+    dp.register_message_handler(add_expence, commands='add_expence')
+    dp.register_callback_query_handler(load_category, text=CATEGORIES,
+                                       state=ExpencesStatesGroup.category)
+    dp.register_message_handler(load_expense,
+                                state=ExpencesStatesGroup.expense)

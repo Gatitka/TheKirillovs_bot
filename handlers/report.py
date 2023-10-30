@@ -68,5 +68,5 @@ async def report(message: types.Message):
 
 
 def register_handlers_report(dp: Dispatcher):
-    dp.message_handler(report_detailed, commands=REPORT)
-    dp.message_handler(report, commands='report')
+    dp.register_message_handler(report_detailed, commands=REPORT)
+    dp.register_message_handler(report, commands='report')
